@@ -64,21 +64,11 @@ function SlashCommands.setCommands(bufnr, available_commands)
     States.setSlashCommands(bufnr, commands)
 end
 
---- Setup native Neovim completion for slash commands in the input buffer
---- Uses completefunc with <C-x><C-u> trigger
---- Neovim handles fuzzy filtering automatically via completeopt
+--- Setup slash command selection via vim.ui.select()
+--- Uses TextChangedI to detect when `/` is typed at prompt start
+--- Users with dressing.nvim or telescope-ui-select.nvim get enhanced UI automatically
 --- @param bufnr integer The input buffer number
 function SlashCommands.setup_completion(bufnr)
-    vim.bo[bufnr].completeopt = "menu,menuone,noinsert,popup,fuzzy"
-
-    -- Include `-` as keyword character so completion doesn't close when typing it
-    vim.bo[bufnr].iskeyword = vim.bo[bufnr].iskeyword .. ",-"
-
-    -- Set completefunc to return our commands
-    -- CRITICAL: v:lua syntax does NOT support parens in require call
-    vim.bo[bufnr].completefunc =
-        "v:lua.require'agentic.acp.slash_commands'.complete_func"
-
     vim.api.nvim_create_autocmd("TextChangedI", {
         buffer = bufnr,
         callback = function()
@@ -101,12 +91,27 @@ function SlashCommands.setup_completion(bufnr)
                 return
             end
 
-            -- Feed <C-x><C-u> to trigger completefunc
-            vim.api.nvim_feedkeys(
-                vim.api.nvim_replace_termcodes("<C-x><C-u>", true, false, true),
-                "n",
-                false
-            )
+            -- Clear the line to prevent the "/" from appearing again
+            vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "" })
+
+            vim.ui.select(commands, {
+                prompt = "Select slash command:",
+                format_item = function(item)
+                    return item.word .. " - " .. item.menu
+                end,
+            }, function(choice)
+                if choice then
+                    vim.api.nvim_buf_set_lines(
+                        bufnr,
+                        0,
+                        1,
+                        false,
+                        { choice.word }
+                    )
+                else
+                    vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "/" })
+                end
+            end)
         end,
     })
 end
