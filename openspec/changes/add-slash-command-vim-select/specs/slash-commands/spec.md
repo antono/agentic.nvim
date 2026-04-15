@@ -9,6 +9,7 @@ The plugin SHALL allow users to select slash commands from a list when typing `/
 #### Scenario: Command selection completes
 - **WHEN** user selects a command from the list and confirms
 - **THEN** the selected command appears with the `/` prefix in the prompt input (e.g., `/commit`)
+- **AND** the cursor is positioned at the end of the completed command
 
 #### Scenario: Selection cancelled
 - **WHEN** user cancels the selection (e.g., presses Escape)

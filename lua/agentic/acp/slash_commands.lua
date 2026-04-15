@@ -101,13 +101,9 @@ function SlashCommands.setup_completion(bufnr)
                 end,
             }, function(choice)
                 if choice then
-                    vim.api.nvim_buf_set_lines(
-                        bufnr,
-                        0,
-                        1,
-                        false,
-                        { "/" .. choice.word }
-                    )
+                    local command = "/" .. choice.word
+                    vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { command })
+                    vim.api.nvim_win_set_cursor(0, { 1, #command + 1 })
                 else
                     vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "/" })
                 end
