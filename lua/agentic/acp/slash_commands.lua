@@ -106,7 +106,7 @@ function SlashCommands.setup_completion(bufnr)
                         0,
                         1,
                         false,
-                        { choice.word }
+                        { "/" .. choice.word }
                     )
                 else
                     vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "/" })
