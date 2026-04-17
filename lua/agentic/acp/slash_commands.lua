@@ -122,6 +122,7 @@ function SlashCommands.setup_completion(bufnr)
                             { file_ref }
                         )
                         vim.api.nvim_win_set_cursor(0, { 1, #file_ref + 1 })
+                        vim.cmd("startinsert")
                     else
                         -- Restore the @ that was in the line
                         local at_pos = line:find("@", 1, true)
@@ -158,6 +159,7 @@ function SlashCommands.setup_completion(bufnr)
                     local command = "/" .. choice.word
                     vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { command })
                     vim.api.nvim_win_set_cursor(0, { 1, #command + 1 })
+                    vim.cmd("startinsert")
                 else
                     vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "/" })
                 end

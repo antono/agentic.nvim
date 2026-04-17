@@ -10,10 +10,12 @@ The plugin SHALL allow users to select slash commands from a list when typing `/
 - **WHEN** user selects a command from the list and confirms
 - **THEN** the selected command appears with the `/` prefix in the prompt input (e.g., `/commit`)
 - **AND** the cursor is positioned at the end of the completed command
+- **AND** Neovim is in insert mode (ready for typing)
 
 #### Scenario: Selection cancelled
 - **WHEN** user cancels the selection (e.g., presses Escape)
 - **THEN** the `/` prefix remains in the prompt input unchanged
+- **AND** Neovim remains in insert mode
 
 ### Requirement: File Reference Completion
 The plugin SHALL allow users to select files from a list when typing `@` at the start of the prompt.
@@ -26,7 +28,9 @@ The plugin SHALL allow users to select files from a list when typing `@` at the 
 - **WHEN** user selects a file from the list and confirms
 - **THEN** the selected filename appears with the `@` prefix in the prompt input (e.g., `@filename`)
 - **AND** the cursor is positioned at the end of the filename
+- **AND** Neovim is in insert mode (ready for typing)
 
 #### Scenario: File selection cancelled
 - **WHEN** user cancels the selection (e.g., presses Escape)
 - **THEN** the `@` prefix remains in the prompt input unchanged
+- **AND** Neovim remains in insert mode
