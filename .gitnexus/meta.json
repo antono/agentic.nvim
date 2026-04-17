@@ -1,0 +1,13 @@
+{
+  "repoPath": "/home/antono/Code/agentic.nvim",
+  "lastCommit": "8b72beecdd22ad8756cec8ed6f32ead8857f4d9c",
+  "indexedAt": "2026-04-15T23:59:35.250Z",
+  "stats": {
+    "files": 157,
+    "nodes": 1208,
+    "edges": 1199,
+    "communities": 2,
+    "processes": 0,
+    "embeddings": 0
+  }
+}

@@ -108,8 +108,7 @@ function SlashCommands.setup_completion(bufnr)
                     return
                 end
 
-                -- Clear the line to prevent the "@" from appearing again
-                vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "" })
+                local original_line = line
 
                 vim.ui.select(files, {
                     prompt = "Select file:",
@@ -124,20 +123,18 @@ function SlashCommands.setup_completion(bufnr)
                             { file_ref }
                         )
                         vim.api.nvim_win_set_cursor(0, { 1, #file_ref + 1 })
-                        vim.cmd("startinsert!")
                     else
-                        -- Restore the @ that was in the line
-                        if at_pos then
-                            vim.api.nvim_buf_set_lines(
-                                bufnr,
-                                0,
-                                1,
-                                false,
-                                { string.rep(" ", at_pos - 1) .. "@" }
-                            )
-                            vim.api.nvim_win_set_cursor(0, { 1, at_pos + 1 })
-                            vim.cmd("startinsert!")
-                        end
+                        vim.api.nvim_buf_set_lines(
+                            bufnr,
+                            0,
+                            1,
+                            false,
+                            { original_line }
+                        )
+                        vim.api.nvim_win_set_cursor(
+                            0,
+                            { 1, #original_line + 1 }
+                        )
                     end
                 end)
                 return
@@ -148,8 +145,7 @@ function SlashCommands.setup_completion(bufnr)
                 return
             end
 
-            -- Clear the line to prevent the "/" from appearing again
-            vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "" })
+            local original_line = line
 
             vim.ui.select(commands, {
                 prompt = "Select slash command:",
@@ -161,9 +157,15 @@ function SlashCommands.setup_completion(bufnr)
                     local command = "/" .. choice.word
                     vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { command })
                     vim.api.nvim_win_set_cursor(0, { 1, #command + 1 })
-                    vim.cmd("startinsert!")
                 else
-                    vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "/" })
+                    vim.api.nvim_buf_set_lines(
+                        bufnr,
+                        0,
+                        1,
+                        false,
+                        { original_line }
+                    )
+                    vim.api.nvim_win_set_cursor(0, { 1, #original_line + 1 })
                 end
             end)
         end,
