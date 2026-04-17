@@ -64,8 +64,23 @@ function SlashCommands.setCommands(bufnr, available_commands)
     States.setSlashCommands(bufnr, commands)
 end
 
---- Setup slash command selection via vim.ui.select()
---- Uses TextChangedI to detect when `/` is typed at prompt start
+--- Get list of files in current directory for file completion
+--- @return string[] files List of filenames in current directory
+local function get_file_list()
+    local handle = io.popen("ls -1 2>/dev/null")
+    if not handle then
+        return {}
+    end
+    local files = {}
+    for line in handle:lines() do
+        table.insert(files, line)
+    end
+    handle:close()
+    return files
+end
+
+--- Setup slash command and file reference selection via vim.ui.select()
+--- Uses TextChangedI to detect when `/` is typed at prompt start OR `@` anywhere in the line
 --- Users with dressing.nvim or telescope-ui-select.nvim get enhanced UI automatically
 --- @param bufnr integer The input buffer number
 function SlashCommands.setup_completion(bufnr)
@@ -73,9 +88,6 @@ function SlashCommands.setup_completion(bufnr)
         buffer = bufnr,
         callback = function()
             local commands = States.getSlashCommands()
-            if #commands == 0 then
-                return
-            end
 
             local cursor = vim.api.nvim_win_get_cursor(0)
             local row = cursor[1]
@@ -87,7 +99,49 @@ function SlashCommands.setup_completion(bufnr)
 
             local line = vim.api.nvim_get_current_line()
 
-            if not line:match("^/") or line:match("%s") then
+            -- Check for @ anywhere in the line for file completion
+            if line:match("%@") then
+                local files = get_file_list()
+                if #files == 0 then
+                    return
+                end
+
+                -- Clear the line to prevent the "@" from appearing again
+                vim.api.nvim_buf_set_lines(bufnr, 0, 1, false, { "" })
+
+                vim.ui.select(files, {
+                    prompt = "Select file:",
+                }, function(choice)
+                    if choice then
+                        local file_ref = "@" .. choice
+                        vim.api.nvim_buf_set_lines(
+                            bufnr,
+                            0,
+                            1,
+                            false,
+                            { file_ref }
+                        )
+                        vim.api.nvim_win_set_cursor(0, { 1, #file_ref + 1 })
+                    else
+                        -- Restore the @ that was in the line
+                        local at_pos = line:find("@", 1, true)
+                        if at_pos then
+                            vim.api.nvim_buf_set_lines(
+                                bufnr,
+                                0,
+                                1,
+                                false,
+                                { string.rep(" ", at_pos - 1) .. "@" }
+                            )
+                            vim.api.nvim_win_set_cursor(0, { 1, at_pos + 1 })
+                        end
+                    end
+                end)
+                return
+            end
+
+            -- Slash commands only at line start
+            if #commands == 0 or not line:match("^/") or line:match("%s") then
                 return
             end
 

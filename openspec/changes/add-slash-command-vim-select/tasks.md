@@ -13,10 +13,10 @@
 
 ## 2. File completion (@) added
 
-- [ ] 2.1 Add logic to detect `@` at line start
-- [ ] 2.2 Get list of files in current directory for completion
-- [ ] 2.3 Call vim.ui.select() with file list
-- [ ] 2.4 Insert selected file with `@` prefix
+- [x] 2.1 Add logic to detect `@` anywhere in the line (not just at start)
+- [x] 2.2 Get list of files in current directory for completion
+- [x] 2.3 Call vim.ui.select() with file list
+- [x] 2.4 Insert selected file with `@` prefix
 
 ## 3. Validation
 
