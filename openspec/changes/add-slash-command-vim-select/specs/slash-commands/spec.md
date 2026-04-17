@@ -21,7 +21,7 @@ The plugin SHALL allow users to select slash commands from a list when typing `/
 The plugin SHALL allow users to select files from a list when typing `@` at the start of the prompt.
 
 #### Scenario: Select file from list
-- **WHEN** user types `@` anywhere in the prompt line
+- **WHEN** user types `@` and cursor is immediately after the `@` character (just typed)
 - **THEN** a selection list appears showing files in the current directory
 
 #### Scenario: File selection completes

@@ -99,8 +99,10 @@ function SlashCommands.setup_completion(bufnr)
 
             local line = vim.api.nvim_get_current_line()
 
-            -- Check for @ anywhere in the line for file completion
-            if line:match("%@") then
+            -- Check for @ at cursor position (just typed) for file completion
+            -- Only trigger when @ is the last character typed (cursor right after @)
+            local at_pos = line:find("@", 1, true)
+            if at_pos and col == at_pos + 1 then
                 local files = get_file_list()
                 if #files == 0 then
                     return
@@ -125,7 +127,6 @@ function SlashCommands.setup_completion(bufnr)
                         vim.cmd("startinsert!")
                     else
                         -- Restore the @ that was in the line
-                        local at_pos = line:find("@", 1, true)
                         if at_pos then
                             vim.api.nvim_buf_set_lines(
                                 bufnr,
@@ -135,6 +136,7 @@ function SlashCommands.setup_completion(bufnr)
                                 { string.rep(" ", at_pos - 1) .. "@" }
                             )
                             vim.api.nvim_win_set_cursor(0, { 1, at_pos + 1 })
+                            vim.cmd("startinsert!")
                         end
                     end
                 end)
